@@ -1,8 +1,7 @@
-How to setup dotfile
+How to install dotfiles
 
 ```shell
 git submodule init
 git submodule update
-sudo apt install git curl vim zsh
 ./install.sh
 ```
