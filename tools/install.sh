@@ -1,19 +1,10 @@
 #!/bin/bash
 
-# Colors
-NC="\033[0m"
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[0;33m"
-
-DOTFILES_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
-
-function echo_c {
-  echo -e "${1}${2}${NC}"
-}
+SCRIPT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
+source ${SCRIPT_DIR}/utils.sh
 
 echo_c ${YELLOW} "Install prerequisite"
-if ! sudo apt-get install -qq git curl vim zsh -y; then 
+if ! sudo apt update && sudo apt install -qq git curl vim zsh -y; then 
     echo_c ${RED} "Fail to install prerequisite"
     exit 1
 fi
@@ -48,6 +39,16 @@ if [ ! -d ~/.oh-my-zsh ]; then
     fi
 else
  	echo_c ${YELLOW} "oh-my-zsh is already installed"
+fi
+
+echo_c ${YELLOW} "Adding dotfile init to ~/.zshrc"
+if [ -z "${DOTFILES}" ]; then
+    echo "" >> ${HOME}/.zshrc
+    echo "# Add custom dotfile installation" >> ${HOME}/.zshrc
+    echo export DOTFILES="$(realpath $DOTFILES_DIR)" >> ${HOME}/.zshrc
+    echo '${DOTFILES}/tools/update.sh' >> ${HOME}/.zshrc
+else
+ 	echo_c ${YELLOW} "dotfile init already installed"
 fi
 
 echo_c ${YELLOW} "Install git files"
