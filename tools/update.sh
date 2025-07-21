@@ -9,9 +9,9 @@ DOTFILES_DIR="${SCRIPT_DIR}/.."
 MAIN_BRANCH="master"
 
 function check_newer_uptream() {
-    git fetch origin "${MAIN_BRANCH}" --quiet
+    git -C $DOTFILES_DIR fetch origin "${MAIN_BRANCH}" --quiet
 
-    if ! git merge-base --is-ancestor origin/"${MAIN_BRANCH}" "${MAIN_BRANCH}"; then
+    if ! git -C $DOTFILES_DIR merge-base --is-ancestor origin/"${MAIN_BRANCH}" "${MAIN_BRANCH}"; then
         return 0
     else
         return 1
