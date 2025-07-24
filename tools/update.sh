@@ -34,5 +34,5 @@ pull_if_yes() {
 
 if check_newer_uptream; then 
     pull_if_yes
-    $DOTFILES_DIR/install.sh
+    $SCRIPT_DIR/install.sh
 fi
