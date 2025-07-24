@@ -22,7 +22,7 @@ pull_if_yes() {
   read -p "Do you want to update dotfiles with the latest changes? [Y/n]: " answer
   case "$answer" in
     [Yy]* )
-      echo "Pulling latest changes..."
+      echo "Pulling latest changes... "
       git -C $DOTFILES_DIR pull
       ;;
     * )
