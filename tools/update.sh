@@ -23,7 +23,7 @@ pull_if_yes() {
   case "$answer" in
     [Yy]* )
       echo "Pulling latest changes..."
-      git pull
+      git -C $DOTFILES_DIR pull
       ;;
     * )
       echo "Skipped update"
