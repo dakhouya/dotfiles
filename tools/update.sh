@@ -27,10 +27,12 @@ pull_if_yes() {
       ;;
     * )
       echo "Skipped update"
+      exit 0
       ;;
   esac
 }
 
 if check_newer_uptream; then 
     pull_if_yes
+    $DOTFILES_DIR/install.sh
 fi

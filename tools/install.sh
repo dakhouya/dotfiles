@@ -31,15 +31,21 @@ if ! sudo usermod -s $(which zsh) $USER; then
     exit 1
 fi
 
-echo_c ${YELLOW} "Install ohmyzsh"
+echo_c ${YELLOW} "Install oh-my-zsh"
 if [ ! -d ~/.oh-my-zsh ]; then
 	if ! sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
-        echo_c ${RED} "Fail to install ohmyzsh"
+        echo_c ${RED} "Fail to install oh-my-zsh"
         exit 1
     fi
 else
  	echo_c ${YELLOW} "oh-my-zsh is already installed"
 fi
+
+echo_c ${YELLOW} "Install custom oh-my-zsh files"
+cp -r "$DOTFILES_DIR/.oh-my-zsh/custom" "$HOME/.oh-my-zsh/"
+ZSHRC="$HOME/.zshrc"
+THEME_NAME="robbyrussel-dk"
+sed -i.bak 's/^ZSH_THEME=.*/ZSH_THEME="'"$THEME_NAME"'"/' "$ZSHRC"
 
 echo_c ${YELLOW} "Adding dotfile init to ~/.zshrc"
 if [ -z "${DOTFILES}" ]; then
