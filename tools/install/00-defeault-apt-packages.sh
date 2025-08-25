@@ -15,7 +15,7 @@ install()
         check_sudo
 
         if ! install_packages "${packages[@]}"; then
-            echo_c ${RED} "Fail to install apt packages"
+            log_error "Fail to install apt packages"
             return 1
         fi
     fi
@@ -33,14 +33,14 @@ check_packages() {
     done
 
     if [ ${#missing[@]} -ne 0 ]; then
-        echo_c ${YELLOW} "Missing packages to be installed: ${missing[*]}"
+        log_warn "Missing packages to be installed: ${missing[*]}"
         return 1
     fi
 }
 
 # Function: install packages (requires sudo)
 install_packages() {
-    echo_c ${YELLOW} "Installing packages: $*"
+    log "Installing packages: $*"
     sudo apt-get update
     sudo apt-get install -y "$@"
 }
