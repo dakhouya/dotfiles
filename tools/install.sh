@@ -3,67 +3,43 @@
 SCRIPT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
 source ${SCRIPT_DIR}/utils.sh
 
-echo_c ${YELLOW} "Install prerequisite"
-if ! sudo apt update && sudo apt install -qq git curl vim zsh -y; then 
-    echo_c ${RED} "Fail to install prerequisite"
-    exit 1
-fi
+INSTALL_SCRIPTS_DIR="${SCRIPT_DIR}/install"
 
-echo_c ${YELLOW} "Install vim files"
-VIM_SYMLINK=${HOME}/.vim
-if [ ! -L ${VIM_SYMLINK} ] || [ ! -e ${VIM_SYMLINK} ]; then
-    ln -sf $DOTFILES_DIR/.vim ${VIM_SYMLINK}
-else 
-    echo_c ${YELLOW} "${VIM_SYMLINK} already created"
-fi
+# Function: run install() from all scripts in a folder
+run_install() {
+    local folder="${INSTALL_SCRIPTS_DIR}"
 
-VIMRC_SYMLINK=${HOME}/.vimrc
-if [ ! -L ${VIMRC_SYMLINK} ] || [ ! -e ${VIMRC_SYMLINK} ]; then
-    ln -sf $DOTFILES_DIR/.vimrc ${VIMRC_SYMLINK}
-else 
-    echo_c ${YELLOW} "${VIMRC_SYMLINK} already created"
-fi
-vim +PlugInstall +qall > /dev/null
-
-echo_c ${YELLOW} "Set zsh as default shell"
-if ! sudo usermod -s $(which zsh) $USER; then
-    echo_c ${RED} "Fail to set zsh as default shell"
-    exit 1
-fi
-
-echo_c ${YELLOW} "Install oh-my-zsh"
-if [ ! -d ~/.oh-my-zsh ]; then
-	if ! sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
-        echo_c ${RED} "Fail to install oh-my-zsh"
-        exit 1
+    if [ ! -d "$folder" ]; then
+        echo_c ${RED} "Folder not found: $folder"
+        return 1
     fi
-else
- 	echo_c ${YELLOW} "oh-my-zsh is already installed"
-fi
 
-echo_c ${YELLOW} "Install custom oh-my-zsh files"
-cp -r "$DOTFILES_DIR/.oh-my-zsh/custom" "$HOME/.oh-my-zsh/"
-ZSHRC="$HOME/.zshrc"
-THEME_NAME="robbyrussel-dk"
-sed -i.bak 's/^ZSH_THEME=.*/ZSH_THEME="'"$THEME_NAME"'"/' "$ZSHRC"
+    for file in "$folder"/*; do
+        # Skip if not a regular file
+        [ -f "$file" ] || continue
+        
+        echo_c ${YELLOW} "Processing $(basename $file)"
+        # Source the file so its functions are available
+        source "$file"
+        
+        # Check if it has an 'install' function
+        if declare -F install >/dev/null; then
+            if ! install; then
+                echo_c ${RED} "Fail to install $file"
+                return 1
+            fi
+            # Clean up (unset) to avoid conflicts between files
+            unset -f install
+        else
+            echo_c ${RED} "No install() function found in $file"
+            return 1
+        fi
+    done
+}
 
-echo_c ${YELLOW} "Adding dotfile init to ~/.zshrc"
-if [ -z "${DOTFILES}" ]; then
-    echo "" >> ${HOME}/.zshrc
-    echo "# Add custom dotfile installation" >> ${HOME}/.zshrc
-    echo export DOTFILES="$(realpath $DOTFILES_DIR)" >> ${HOME}/.zshrc
-    echo '${DOTFILES}/tools/update.sh' >> ${HOME}/.zshrc
-else
- 	echo_c ${YELLOW} "dotfile init already installed"
-fi
-
-echo_c ${YELLOW} "Install git files"
-GITCONFIG_SYMLINK=${HOME}/.gitconfig
-if [ ! -L ${GITCONFIG_SYMLINK} ] || [ ! -e ${GITCONFIG_SYMLINK} ]; then
-    ln -sf $DOTFILES_DIR/.gitconfig ${GITCONFIG_SYMLINK}
-else 
-    echo_c ${YELLOW} "${GITCONFIG_SYMLINK} already created"
+if ! run_install; then
+    exit 1
 fi
 
 echo_c ${GREEN} "Dotfiles installation completed!"
-echo_c ${GREEN} "Please reboot to make sure all changes are applied"
+echo_c ${GREEN} "Restart your terminal to see changes"
