@@ -5,6 +5,7 @@ COLOR_NC="\033[0m"
 COLOR_RED="\033[0;31m"
 COLOR_CYAN="\033[36m"
 COLOR_YELLOW="\033[0;33m"
+COLOR_GREEN="\033[32m"
 
 export DOTFILE_TOOLS_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
 export DOTFILES_DIR="${DOTFILE_TOOLS_DIR}/.."
