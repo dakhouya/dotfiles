@@ -18,28 +18,33 @@ run_install() {
         # Skip if not a regular file
         [ -f "$file" ] || continue
         
-        log "Processing $(basename $file)"
+        log_inline "-- Processing $(basename $file) ..."
         # Source the file so its functions are available
         source "$file"
         
         # Check if it has an 'install' function
         if declare -F install >/dev/null; then
             if ! install; then
+                log_inline "-- Processing $(basename $file) ... ❌\n"
                 log_error "Fail to install $file"
                 return 1
             fi
             # Clean up (unset) to avoid conflicts between files
+            log_inline "-- Processing $(basename $file) ... ✅\n"
             unset -f install
+            # dummy log for \n
         else
+            log_inline "-- Processing $(basename $file) ... ❌\n"
             log_error "No install() function found in $file"
             return 1
         fi
     done
 }
 
+log "Will proceed to installation"
 if ! run_install; then
     exit 1
 fi
 
-log "Dotfiles installation completed!"
 log "Restart your terminal to see changes"
+log "Dotfiles installation completed!"

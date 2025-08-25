@@ -20,6 +20,11 @@ log() {
     echo -e "${COLOR_CYAN}$*${COLOR_NC}"
 }
 
+log_inline() {
+    local msg="$*"
+    echo -ne "${COLOR_CYAN}$msg${COLOR_RESET}\r"
+}
+
 log_warn() {
     echo -e "${COLOR_YELLOW}[WARN] $*${COLOR_NC}"
 }
