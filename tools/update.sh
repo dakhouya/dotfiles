@@ -8,7 +8,8 @@ DOTFILES_DIR="${SCRIPT_DIR}/.."
 # Main upstream branch
 MAIN_BRANCH="master"
 
-function check_newer_uptream() {
+check_newer_uptream() 
+{
     git -C $DOTFILES_DIR fetch origin "${MAIN_BRANCH}" --quiet
 
     if ! git -C $DOTFILES_DIR merge-base --is-ancestor origin/"${MAIN_BRANCH}" "${MAIN_BRANCH}"; then
@@ -18,15 +19,17 @@ function check_newer_uptream() {
     fi
 }
 
-pull_if_yes() {
-  read -p "Do you want to update dotfiles with the latest changes? [Y/n]: " answer
+pull_if_yes() 
+{
+  log "Do you want to update dotfiles with the latest changes? [Y/n]: "
+  read answer
   case "$answer" in
     [Yy]* )
-      echo "Pulling latest changes... "
+      log "Pulling latest changes... "
       git -C $DOTFILES_DIR pull
       ;;
     * )
-      echo "Skipped update"
+      log "Skipped update"
       exit 0
       ;;
   esac
